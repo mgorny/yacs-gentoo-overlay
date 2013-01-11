@@ -7,8 +7,8 @@ EAPI=5
 PYTHON_COMPAT=( python2_7 )
 inherit distutils-r1
 
-DESCRIPTION="database migrations tool, written by the author of SQLAlchemy"
-HOMEPAGE="https://bitbucket.org/zzzeek/alembic"
+DESCRIPTION="A code search tool"
+HOMEPAGE="https://github.com/gleitz/howdoi"
 SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="MIT"
