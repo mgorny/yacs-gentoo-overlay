@@ -23,6 +23,7 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-fbsd.patch
 
+	eaclocal
 	eautoreconf
 }
 
