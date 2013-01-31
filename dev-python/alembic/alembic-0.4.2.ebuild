@@ -14,7 +14,7 @@ SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="test"
+IUSE="test doc"
 
 DEPEND=">=dev-python/sqlalchemy-0.7.9
 	dev-python/mako
@@ -22,6 +22,12 @@ DEPEND=">=dev-python/sqlalchemy-0.7.9
 	test? ( dev-python/nose[${PYTHON_USEDEP}] )"
 RDEPEND="${DEPEND}"
 # It should work with lower versions of SA but it does not pass the testsuite
+
+python_install_all() {
+	use doc && local HTML_DOCS=( docs/. )
+
+	distutils-r1_python_install_all
+}
 
 python_test() {
 	nosetests || die
