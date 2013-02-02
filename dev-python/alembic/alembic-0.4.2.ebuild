@@ -23,6 +23,7 @@ IUSE="test doc"
 DEPEND=">=dev-python/sqlalchemy-0.7.9
 	dev-python/mako
 	dev-python/setuptools[${PYTHON_USEDEP}]
+	virtual/python-argparse[${PYTHON_USEDEP}]
 	test? ( dev-python/nose[${PYTHON_USEDEP}] )"
 RDEPEND="${DEPEND}"
 
