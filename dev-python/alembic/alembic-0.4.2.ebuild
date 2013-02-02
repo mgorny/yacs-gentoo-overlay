@@ -4,7 +4,7 @@
 
 EAPI=5
 
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python2_7 python3_2 )
 inherit distutils-r1
 
 DESCRIPTION="database migrations tool, written by the author of SQLAlchemy"
