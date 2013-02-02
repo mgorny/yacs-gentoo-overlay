@@ -5,6 +5,11 @@
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 )
+# NOTE: I haven't tested if python <2.7 works.
+# NOTE: python 3.x should work, but requires running 2to3 on tests for them to
+# pass
+# NOTE: It should also work sqlalchemy 0.7.x and maybe 0.6.x but the tests does
+# not pass
 inherit distutils-r1
 
 DESCRIPTION="database migrations tool, written by the author of SQLAlchemy"
