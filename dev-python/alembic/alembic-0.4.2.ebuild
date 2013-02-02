@@ -6,8 +6,8 @@ EAPI=5
 
 PYTHON_COMPAT=( python2_7 )
 # NOTE: I haven't tested if python <2.7 works.
-# NOTE: python 3.x should work, but https://bitbucket.org/zzzeek/alembic/issue/102/alembic-042-tests-does-not-pass-on-python
-# NOTE: It should also work sqlalchemy 0.7.x and maybe 0.6.x but the tests does
+# TODO: python 3.x support bugs: https://bitbucket.org/zzzeek/alembic/issue/102/alembic-042-tests-does-not-pass-on-python
+# TODO: dependency on sqlalchemy <0.7.9 does not pass test suite bugs: https://bitbucket.org/zzzeek/alembic/issue/96/testsuite-does-not-pass
 # not pass
 inherit distutils-r1
 
@@ -25,7 +25,6 @@ DEPEND=">=dev-python/sqlalchemy-0.7.9
 	dev-python/setuptools[${PYTHON_USEDEP}]
 	test? ( dev-python/nose[${PYTHON_USEDEP}] )"
 RDEPEND="${DEPEND}"
-# It should work with lower versions of SA but it does not pass the testsuite
 
 python_install_all() {
 	use doc && local HTML_DOCS=( docs/. )
@@ -35,6 +34,5 @@ python_install_all() {
 
 python_test() {
 	nosetests || die
-	# don't use setup.py test
-	# https://bitbucket.org/zzzeek/alembic/issue/96/testsuite-does-not-pass
+	# NOTE: don't use setup.py test bugs: https://bitbucket.org/zzzeek/alembic/issue/96/testsuite-does-not-pass
 }
