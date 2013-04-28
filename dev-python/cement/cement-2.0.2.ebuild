@@ -6,7 +6,6 @@
 EAPI=5
 
 PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2} )
-DOCS=( ChangeLog CONTRIBUTORS README.md )
 
 inherit distutils-r1 versionator
 
@@ -28,13 +27,13 @@ DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]
 RDEPEND="${DEPEND}
 	virtual/python-argparse[${PYTHON_USEDEP}]"
 
-python_prepare() {
-	epatch "${FILESDIR}"/tests-installation.patch
-	# https://github.com/cement/cement/issues/185
-}
+
+DOCS=( ChangeLog CONTRIBUTORS README.md )
+PATCHES=( "${FILESDIR}"/tests-installation.patch )
+# https://github.com/cement/cement/issues/185
 
 python_test() {
-	nosetests || die
+	nosetests || die "Tests fail with ${EPYTHON}"
 }
 
 python_compile_all() {
