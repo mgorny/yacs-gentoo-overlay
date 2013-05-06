@@ -28,6 +28,14 @@ python_test() {
 	${EPYTHON} test_svg2rlg.py
 }
 
+src_prepare() {
+	tmp=`mktemp`
+	for i in `find -name '*.py'`; do
+		tr -d '\r' < $i >$tmp
+		mv $tmp $i;
+	done
+}
+
 python_install_all() {
 	distutils-r1_python_install_all
 
