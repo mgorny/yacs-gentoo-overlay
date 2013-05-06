@@ -27,3 +27,9 @@ RDEPEND="${DEPEND}
 python_test() {
 	${EPYTHON} test_svg2rlg.py
 }
+
+python_install_all() {
+	distutils-r1-python_install_all
+
+	dobin svg2rlg.py
+}
