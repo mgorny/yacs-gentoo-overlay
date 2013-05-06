@@ -29,7 +29,7 @@ python_test() {
 }
 
 python_install_all() {
-	distutils-r1-python_install_all
+	distutils-r1_python_install_all
 
-	dobin svg2rlg.py
+	dobin svg2rlg.py svg2rlg
 }
