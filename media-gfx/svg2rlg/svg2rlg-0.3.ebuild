@@ -37,7 +37,7 @@ src_prepare() {
 }
 
 python_install_all() {
-	distutils-r1_python_install_all
-
 	newbin svg2rlg.py svg2rlg
+
+	distutils-r1_python_install_all
 }
