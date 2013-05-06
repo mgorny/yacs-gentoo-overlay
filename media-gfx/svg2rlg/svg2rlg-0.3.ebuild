@@ -24,3 +24,6 @@ DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}
 	dev-python/reportlab[${PYTHON_USEDEP}]"
 
+python_test() {
+	${EPYTHON} test_svg2rlg.py
+}
