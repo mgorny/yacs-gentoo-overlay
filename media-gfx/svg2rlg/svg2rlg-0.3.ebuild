@@ -24,7 +24,8 @@ DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}
 	dev-python/reportlab[${PYTHON_USEDEP}]"
 
-PATCHES=( "${FILESDIR}/${PN}-issue-3.patch" "${FILESDIR}/${PN}-issue-6.patch" )
+PATCHES=( "${FILESDIR}/${PN}-issue-3.patch" "${FILESDIR}/${PN}-issue-6.patch"
+	"${FILESDIR}/${PN}-issue-7.patch")
 
 python_test() {
 	${EPYTHON} test_svg2rlg.py
