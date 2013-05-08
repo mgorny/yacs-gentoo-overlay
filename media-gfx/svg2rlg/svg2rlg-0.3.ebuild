@@ -30,10 +30,12 @@ python_test() {
 	${EPYTHON} test_svg2rlg.py
 }
 
-src_prepare() {
+python_prepare_all() {
 	tmp=`mktemp` || die "mktemp failed"
 	for i in `find -name '*.py'`; do
 		tr -d '\r' < $i >$tmp  || die "tr failed"
 		mv $tmp $i || die "mv failed"
 	done
+
+	distutils-r1_python_prepare_all
 }
