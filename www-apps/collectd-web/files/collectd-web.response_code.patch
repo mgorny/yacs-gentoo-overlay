@@ -1,0 +1,167 @@
+commit b43bd0fc5498d8078b875e51817ce1901cf4c78a
+Author: yac <yac@blesmrt.net>
+Date:   Mon May 13 21:59:35 2013 +0200
+
+    + response_code
+
+diff --git a/cgi-bin/collection.modified.cgi b/cgi-bin/collection.modified.cgi
+index b9f6fb8..475e2f0 100755
+--- a/cgi-bin/collection.modified.cgi
++++ b/cgi-bin/collection.modified.cgi
+@@ -2764,8 +2764,19 @@ sub load_graph_definitions {
+             'GPRINT:rt_max:MAX:%4.1lf ms Max,',
+             'GPRINT:rt_avg:LAST:%4.1lf ms Last'
+         ],
+-
+-
++        response_code => [
++            '-v', 'Seconds', '-l', '0',
++            'DEF:rt_avg={file}:value:AVERAGE',
++            'DEF:rt_min={file}:value:MIN',
++            'DEF:rt_max={file}:value:MAX',
++            "AREA:rt_max#$HalfBlue",
++            "AREA:rt_min#$Canvas",
++            "LINE1:rt_avg#$FullBlue:Response Code",
++            'GPRINT:rt_min:MIN:%4.1lf ms Min,',
++            'GPRINT:rt_avg:AVERAGE:%4.1lf ms Avg,',
++            'GPRINT:rt_max:MAX:%4.1lf ms Max,',
++            'GPRINT:rt_avg:LAST:%4.1lf ms Last'
++        ],
+     };
+     $GraphDefs->{'if_multicast'}        = $GraphDefs->{'ipt_packets'};
+     $GraphDefs->{'if_tx_errors'}        = $GraphDefs->{'if_rx_errors'};
+@@ -3248,24 +3259,24 @@ sub meta_graph_tcp_connections {
+ sub meta_graph_vmpage_number
+ {
+     confess ("Wrong number of arguments") if (@_ != 5);
+-  
++
+     my $host = shift;
+     my $plugin = shift;
+     my $plugin_instance = shift;
+     my $type = shift;
+     my $type_instances = shift;
+-  
++
+     my $opts = {};
+     my $sources = [];
+-  
++
+     $opts->{'title'} = "$host/$plugin"
+       . (defined ($plugin_instance) ? "-$plugin_instance" : '') . "/$type";
+     $opts->{'number_format'} = '%6.2lf';
+-  
++
+     $opts->{'rrd_opts'} = ['-v', 'Pages'];
+-  
++
+     my @files = ();
+-  
++
+     $opts->{'colors'} =
+     {
+         anon_pages       => '00e000',
+@@ -3278,15 +3289,15 @@ sub meta_graph_vmpage_number
+         unstable         => '0000a0',
+         writeback        => 'ff0000',
+     };
+-  
++
+     _custom_sort_arrayref ($type_instances,
+       [reverse qw(anon_pages bounce dirty file_pages mapped page_table_pages slab unstable writeback)]);
+-  
++
+     for (@$type_instances) {
+         my $inst = $_;
+         my $file = '';
+         my $title = $opts->{'title'};
+-    
++
+         for (@DataDirs) {
+             if (-e "$_/$title-$inst.rrd") {
+                 $file = "$_/$title-$inst.rrd";
+@@ -3294,7 +3305,7 @@ sub meta_graph_vmpage_number
+             }
+         }
+         confess ("No file found for $title") if ($file eq '');
+-    
++
+         push (@$sources,
+           {
+               name => $inst,
+@@ -3302,31 +3313,31 @@ sub meta_graph_vmpage_number
+           }
+         );
+     } # for (@$type_instances)
+-  
++
+     return (meta_graph_generic_stack ($opts, $sources));
+ } # meta_graph_vmpage_number
+ 
+ sub meta_graph_vmpage_action
+ {
+     confess ("Wrong number of arguments") if (@_ != 5);
+-  
++
+     my $host = shift;
+     my $plugin = shift;
+     my $plugin_instance = shift;
+     my $type = shift;
+     my $type_instances = shift;
+-  
++
+     my $opts = {};
+     my $sources = [];
+-  
++
+     $opts->{'title'} = "$host/$plugin"
+       . (defined ($plugin_instance) ? "-$plugin_instance" : '') . "/$type";
+     $opts->{'number_format'} = '%6.2lf';
+-  
++
+     $opts->{'rrd_opts'} = ['-v', 'Pages'];
+-  
++
+     my @files = ();
+-  
++
+     $opts->{'colors'} =
+     {
+         activate    => '00e000',
+@@ -3338,15 +3349,15 @@ sub meta_graph_vmpage_action
+         scan_kswapd => '0000f0',
+         steal       => '0000a0',
+     };
+-  
++
+     _custom_sort_arrayref ($type_instances,
+       [reverse qw(activate deactivate alloc free refill scan_direct scan_kswapd steal)]);
+-  
++
+     for (@$type_instances) {
+       my $inst = $_;
+       my $file = '';
+       my $title = $opts->{'title'};
+-  
++
+       for (@DataDirs) {
+           if (-e "$_/$title-$inst.rrd") {
+               $file = "$_/$title-$inst.rrd";
+@@ -3354,7 +3365,7 @@ sub meta_graph_vmpage_action
+           }
+       }
+       confess ("No file found for $title") if ($file eq '');
+-  
++
+       push (@$sources,
+         {
+   	name => $inst,
+@@ -3362,7 +3373,7 @@ sub meta_graph_vmpage_action
+         }
+       );
+     } # for (@$type_instances)
+-  
++
+     return (meta_graph_generic_stack ($opts, $sources));
+ } # meta_graph_vmpage_action
+ 
