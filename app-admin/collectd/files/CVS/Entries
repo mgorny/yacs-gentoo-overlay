@@ -1,0 +1,17 @@
+/collectd-4.10.1-libiptc.patch/1.1/Tue Sep 28 15:17:05 2010//
+/collectd-4.10.1-libperl.patch/1.1/Tue Sep 28 15:17:05 2010//
+/collectd-4.10.1-noowniptc.patch/1.1/Tue Oct 12 17:59:52 2010//
+/collectd-4.10.2-libnotify-0.7.patch/1.1/Sun Feb  6 12:25:42 2011//
+/collectd-4.10.2-libocci.patch/1.1/Thu Dec 16 17:33:45 2010//
+/collectd-4.10.2-nohal.patch/1.1/Mon Feb  7 21:21:52 2011//
+/collectd-4.10.3-lt.patch/1.1/Sun Apr 24 16:01:24 2011//
+/collectd-4.10.3-werror.patch/1.1/Sun Apr 24 21:16:04 2011//
+/collectd-5.1.0-libperl.patch/1.1/Tue Oct 30 19:33:13 2012//
+/collectd-5.1.0-mongoc06.patch/1.1/Tue Oct 30 19:33:13 2012//
+/collectd-5.1.0-netlink.patch/1.1/Mon May  7 00:41:37 2012//
+/collectd-5.1.1-lt.patch/1.1/Mon Nov 19 19:30:06 2012//
+/collectd-5.1.1-perl-prefix.patch/1.1/Mon Dec  3 20:49:27 2012//
+/collectd.confd/1.2/Sun Apr 24 17:10:05 2011//
+/collectd.initd/1.6/Tue Feb  7 20:12:03 2012//
+/logrotate/1.1/Sun Oct 31 21:19:00 2010//
+D
