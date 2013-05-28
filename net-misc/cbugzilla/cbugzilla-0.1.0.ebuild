@@ -9,7 +9,7 @@ inherit autotools
 DESCRIPTION="CLI and C api to get data from Bugzilla"
 HOMEPAGE="https://github.com/yaccz/cbugzilla"
 #SRC_URI="mirror://github.com/yaccz/${PN}/v/${PV}.tar.bz2"
-SRC_URI="https://github.com/yaccz/${PN}/archive/v/${PV}.tar.gz -> ${P}.tar.bz"
+SRC_URI="https://github.com/yaccz/${PN}/archive/v/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
