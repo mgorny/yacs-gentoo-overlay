@@ -21,3 +21,7 @@ DEPEND="net-misc/curl
 RDEPEND="${DEPEND}"
 
 S=${WORKDIR}/${PN}-v-${PV}
+
+src_prepare() {
+	eautoreconf
+}
