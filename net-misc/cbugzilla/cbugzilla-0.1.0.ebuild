@@ -19,3 +19,5 @@ IUSE=""
 DEPEND="net-misc/curl
 	dev-libs/libxdg-basedir"
 RDEPEND="${DEPEND}"
+
+S=${WORKDIR}/${PN}-v-${PV}
