@@ -87,7 +87,7 @@ index c6e2ae9..3e5c578 100644
  
 +  if(wp->response_code)
 +  {
-+    long *response_code;
++    long response_code;
 +    status = curl_easy_getinfo(wp->curl, CURLINFO_RESPONSE_CODE, &response_code);
 +    if(status != CURLE_OK) {
 +      ERROR ("curl plugin: curl_easy_getinfo failed with staus %i: %s",
