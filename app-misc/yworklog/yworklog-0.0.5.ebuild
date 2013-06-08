@@ -8,7 +8,7 @@ PYTHON_REQ_USE=sqlite
 
 inherit distutils-r1
 
-DESCRIPTION="Stack based utility with CLI interface helping you to monitor time spent on tasks."
+DESCRIPTION="Stack based utility with CLI interface helping to monitor time spent on tasks"
 HOMEPAGE="https://github.com/yaccz/worklog"
 SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
