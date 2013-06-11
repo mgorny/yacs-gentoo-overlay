@@ -37,7 +37,7 @@ COLLECTD_TESTED_PLUGINS="aggregation apache apcups ascent battery bind conntrack
 	serial snmp swap syslog table tail target_notification target_replace
 	target_scale target_set tcpconns teamspeak2 ted thermal threshold tokyotyrant
 	unixsock uptime users uuid varnish vmem vserver wireless write_graphite
-	write_http write_mongodb"
+	write_http write_mongodb cbugzilla"
 
 COLLECTD_DISABLED_PLUGINS="${COLLECTD_IMPOSSIBLE_PLUGINS} ${COLLECTD_UNTESTED_PLUGINS}"
 
@@ -57,6 +57,7 @@ COMMON_DEPEND="
 	collectd_plugins_apache?		( net-misc/curl )
 	collectd_plugins_ascent?		( net-misc/curl dev-libs/libxml2 )
 	collectd_plugins_bind?			( dev-libs/libxml2 )
+	collectd_plugins_cbugzilla?			( net-misc/cbugzilla )
 	collectd_plugins_curl?			( net-misc/curl )
 	collectd_plugins_curl_json?		( net-misc/curl dev-libs/yajl )
 	collectd_plugins_curl_xml?		( net-misc/curl dev-libs/libxml2 )
@@ -113,8 +114,10 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.10.3"-werror.patch
 	"${FILESDIR}/${PN}-5.1.0"-libperl.patch
 	"${FILESDIR}/${PN}-5.1.1"-lt.patch
+	"${FILESDIR}/cbugzilla.patch"
 	"${FILESDIR}/${PN}-319-curl_response_code.patch"
 )
+
 
 # @FUNCTION: collectd_plugin_kernel_linux
 # @DESCRIPTION:
