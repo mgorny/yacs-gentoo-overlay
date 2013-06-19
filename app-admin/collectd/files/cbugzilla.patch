@@ -103,7 +103,7 @@ index a62d608..619c2a2 100644
      contextswitch . . . . $enable_contextswitch
      cpu . . . . . . . . . $enable_cpu
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 2bebec5..c3ed868 100644
+index 2bebec5..743266e 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -303,6 +303,17 @@ endif
@@ -124,6 +124,22 @@ index 2bebec5..c3ed868 100644
  if BUILD_PLUGIN_CURL_JSON
  pkglib_LTLIBRARIES += curl_json.la
  curl_json_la_SOURCES = curl_json.c
+@@ -1383,6 +1394,7 @@ endif
+ BUILT_SOURCES += $(dist_man_MANS)
+ 
+ dist_man_MANS = collectd.1 \
++		collectd-cbugzilla.5 \
+ 		collectd.conf.5 \
+ 		collectd-email.5 \
+ 		collectd-exec.5 \
+@@ -1403,6 +1415,7 @@ dist_man_MANS = collectd.1 \
+ EXTRA_DIST = types.db
+ 
+ EXTRA_DIST +=   collectd.conf.pod \
++		collectd-cbugzilla.pod \
+ 		collectd-email.pod \
+ 		collectd-exec.pod \
+ 		collectdctl.pod \
 diff --git a/src/cbugzilla.c b/src/cbugzilla.c
 new file mode 100644
 index 0000000..40d0d2c
@@ -774,6 +790,97 @@ index 0000000..40d0d2c
 +} /* void module_register */
 +
 +/* vim: set sw=2 sts=2 et fdm=marker : */
+diff --git a/src/collectd-cbugzilla.pod b/src/collectd-cbugzilla.pod
+new file mode 100644
+index 0000000..e1afd04
+--- /dev/null
++++ b/src/collectd-cbugzilla.pod
+@@ -0,0 +1,85 @@
++# Permission is hereby granted, free of charge, to any person obtaining a
++# copy of this software and associated documentation files (the "Software"),
++# to deal in the Software without restriction, including without limitation
++# the rights to use, copy, modify, merge, publish, distribute, sublicense,
++# and/or sell copies of the Software, and to permit persons to whom the
++# Software is furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++
++=head1 NAME
++
++collectd-cbugzilla - Documentation of collectd's C<cbugzilla plugin>
++
++=head1 SYNOPSIS
++
++  <LoadPlugin cbugzilla>
++    Interval 14400
++  </LoadPlugin>
++  # ...
++  <Plugin cbugzilla>
++    URL "https://bugs.gentoo.org"
++    User "foo"
++    Password "bar"
++
++    <NamedCmd "twisted">
++        MeasureResponseTime true
++    </NamedCmd>
++
++    <NamedCmd "yac cc'd">
++    # ...
++  </Plugin>
++
++=head1 DESCRIPTION
++
++The C<cbugzilla plugin> uses cbugzilla to run saved queries in bugzilla and
++extract the number of bugs returned.
++
++=head1 CONFIGURATION
++
++=over 4
++
++=item B<LoadPlugin> I<Plugin>
++
++Loads the cbugzilla plugin I<Plugin>. As this metric is unlikely to change often and sometimes can be expensive to run, you should set Interval to some reasonable value like twice a day or so. Use your judgement.
++
++=item B<URL> I<Name>
++
++The url to root of the bugzilla instance.
++
++=item B<User> I<Name>
++
++User to log in as.
++
++=item B<Password> I<Name>
++
++Password log in with.
++
++=back
++
++=head2 The B<NamedCmd> I<Name> block
++
++I<Name> defines the Named Command (aka saved query) to be executed. Only the I<Name> is required. It takes following optional options:
++
++=over 4
++
++=item B<MeasureResponseTime> I<bool>
++
++If true, then in addition to number of bugs, timing data associated with the query, as provided by cbugzilla, are collected too.
++
++Default: false
++
++=back
++
++=head1 SEE ALSO
++
++L<collectd(1)>,
++L<collectd.conf(5)>
++
++=head1 AUTHOR
++
++The C<cbugzilla plugin> has been written by
++Jan Matejka E<lt>yac@gentoo.orgE<gt>
++
++=cut
 diff --git a/src/types.db b/src/types.db
 index 3358f5d..dca4cf2 100644
 --- a/src/types.db
