@@ -2,16 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/twisted/twisted-13.0.0.ebuild,v 1.1 2013/04/08 06:40:09 patrick Exp $
 
-EAPI="4"
-PYTHON_DEPEND="2:2.6"
-SUPPORT_PYTHON_ABIS="1"
-RESTRICT_PYTHON_ABIS="2.5 3.* *-jython"
-# A couple of failures (refcounting, version-checking), but sufficiently
-# functional to be useful, so restrict just the tests.
-PYTHON_TESTS_RESTRICTED_ABIS="*-pypy-*"
+EAPI="5"
+PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
+
 MY_PACKAGE="Core"
 
-inherit eutils twisted versionator
+inherit eutils twisted-r1
 
 DESCRIPTION="An asynchronous networking framework written in Python"
 
@@ -20,30 +16,31 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~ia64-hpux ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="crypt gtk serial"
 
-DEPEND="net-zope/zope-interface
-	crypt? ( >=dev-python/pyopenssl-0.10 )
-	gtk? ( dev-python/pygtk:2 )
-	serial? ( dev-python/pyserial )"
+DEPEND="net-zope/zope-interface[${PYTHON_USEDEP}]
+	crypt? ( >=dev-python/pyopenssl-0.10[${PYTHON_USEDEP}] )
+	gtk? ( dev-python/pygtk:2[${PYTHON_USEDEP}] )
+	serial? ( dev-python/pyserial[${PYTHON_USEDEP}] )"
 RDEPEND="${DEPEND}"
 
 # Needed to make the sendmsg extension work
 # (see http://twistedmatrix.com/trac/ticket/5701 )
 PYTHON_CFLAGS=("2.* + -fno-strict-aliasing")
 
-DOCS="CREDITS NEWS README"
+DOCS=( CREDITS NEWS README )
+PATCHES=( )
 
-src_prepare(){
-	distutils_src_prepare
+# Give a load-sensitive test a better chance of succeeding.
+PATCHES+=( "${FILESDIR}/${PN}-2.1.0-echo-less.patch" )
 
-	# Give a load-sensitive test a better chance of succeeding.
-	epatch "${FILESDIR}/${PN}-2.1.0-echo-less.patch"
+# Skip a test if twisted conch is not available
+# (see Twisted ticket #5703)
+PATCHES+=( "${FILESDIR}/twisted-12.1.0-remove-tests-conch-dependency.patch" )
 
-	# Skip a test if twisted conch is not available
-	# (see Twisted ticket #5703)
-	epatch "${FILESDIR}/twisted-12.1.0-remove-tests-conch-dependency.patch"
+# Respect TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE variable.
+PATCHES+=( "${FILESDIR}/${PN}-9.0.0-respect_TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE.patch" )
 
-	# Respect TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE variable.
-	epatch "${FILESDIR}/${PN}-9.0.0-respect_TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE.patch"
+python_prepare_all() {
+	distutils-r1_python_prepare_all
 
 	if [[ "${EUID}" -eq 0 ]]; then
 		# Disable tests failing with root permissions.
@@ -54,57 +51,43 @@ src_prepare(){
 	fi
 }
 
-src_test() {
-	testing() {
-		local exit_status="0"
-		"$(PYTHON)" setup.py build -b "build-${PYTHON_ABI}" install --root="${T}/tests-${PYTHON_ABI}" --no-compile || die "Installation of tests failed with $(python_get_implementation_and_version)"
+python_test() {
+	# NOTE: on pypy a couple of failures (refcounting, version-checking) is
+	# expected
 
-		pushd "${T}/tests-${PYTHON_ABI}${EPREFIX}$(python_get_sitedir)" > /dev/null || die
+	"${PYTHON}" setup.py build -b "build-${EPYTHON}" install --root="${T}/tests-${EPYTHON}" --no-compile || die "Installation of tests failed"
 
-		# Skip broken tests.
-		sed -e "s/test_buildAllTarballs/_&/" -i twisted/python/test/test_release.py || die "sed failed"
+	pushd "${T}/tests-${EPYTHON}${EPREFIX}$(python_get_sitedir)" > /dev/null || die
 
-		# http://twistedmatrix.com/trac/ticket/5375
-		sed -e "/class ZshIntegrationTestCase/,/^$/d" -i twisted/scripts/test/test_scripts.py || die "sed failed"
+	# Skip broken tests.
+	sed -e "s/test_buildAllTarballs/_&/" -i twisted/python/test/test_release.py || die "sed failed"
 
-		# tap2rpm is already skipped if rpm is not installed, but fails for me on a Gentoo box with it present.
-		# I currently lack the cycles to track this failure down.
-		rm twisted/scripts/test/test_tap2rpm.py
+	# http://twistedmatrix.com/trac/ticket/5375
+	sed -e "/class ZshIntegrationTestCase/,/^$/d" -i twisted/scripts/test/test_scripts.py || die "sed failed"
 
-		# Prevent it from pulling in plugins from already installed twisted packages.
-		rm -f twisted/plugins/__init__.py
+	# tap2rpm is already skipped if rpm is not installed, but fails for me on a Gentoo box with it present.
+	# I currently lack the cycles to track this failure down.
+	rm twisted/scripts/test/test_tap2rpm.py
 
-		# An empty file doesn't work because the tests check for doc strings in all packages.
-		echo "'''plugins stub'''" > twisted/plugins/__init__.py || die
+	# Prevent it from pulling in plugins from already installed twisted packages.
+	rm -f twisted/plugins/__init__.py
 
-		if ! PYTHONPATH="." "${T}/tests-${PYTHON_ABI}${EPREFIX}/usr/bin/trial" twisted; then
-			if [[ -n "${TWISTED_DEBUG_TESTS}" ]]; then
-				die "Tests failed with $(python_get_implementation_and_version)"
-			else
-				exit_status="1"
-			fi
-		fi
+	# An empty file doesn't work because the tests check for doc strings in all packages.
+	echo "'''plugins stub'''" > twisted/plugins/__init__.py || die
 
-		popd > /dev/null || die
-		return "${exit_status}"
-	}
-	python_execute_function testing
+	if ! PYTHONPATH="." "${T}/tests-${EPYTHON}${EPREFIX}/usr/bin/trial" twisted; then
+		die "Tests failed with ${EPYTHON}"
+	fi
+
+	popd > /dev/null || die
 }
 
-src_install() {
-	distutils_src_install
-	python_clean_installation_image
+python_install_all() {
+	distutils-r1_python_install_all
 
-	python_generate_wrapper_scripts -E -f -q "${ED}usr/bin/trial"
-
-	postinstallational_preparation() {
-		touch "${ED}$(python_get_sitedir)/Twisted-${PV}-py$(python_get_version).egg-info"
-
-		# Delete dropin.cache to avoid collisions.
-		# dropin.cache is regenerated in pkg_postinst().
-		rm -f "${ED}$(python_get_sitedir)/twisted/plugins/dropin.cache"
-	}
-	python_execute_function -q postinstallational_preparation
+	# Delete dropin.cache to avoid collisions.
+	# dropin.cache is regenerated in pkg_postinst().
+	rm -f "${ED}$(python_get_sitedir)/twisted/plugins/dropin.cache"
 
 	# Don't install index.xhtml page.
 	doman doc/man/*.?

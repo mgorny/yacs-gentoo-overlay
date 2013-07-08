@@ -2,18 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/epsilon/epsilon-0.6.0-r1.ebuild,v 1.2 2012/10/12 08:15:00 patrick Exp $
 
-EAPI="3"
-PYTHON_DEPEND="2"
-SUPPORT_PYTHON_ABIS="1"
-RESTRICT_PYTHON_ABIS="2.5 3.* *-jython"
-DISTUTILS_SRC_TEST="trial"
-DISTUTILS_DISABLE_TEST_DEPENDENCY="1"
+EAPI="5"
+PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-# setup.py uses epsilon.setuphelper.autosetup(), which tries to use
-# build-${PYTHON_ABI} directories as packages.
-DISTUTILS_USE_SEPARATE_SOURCE_DIRECTORIES="1"
-
-inherit eutils twisted
+inherit eutils twisted-r1
 
 MY_PN="Epsilon"
 MY_P="${MY_PN}-${PV}"
@@ -27,14 +19,15 @@ SLOT="0"
 KEYWORDS="~amd64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE=""
 
-DEPEND=">=dev-python/twisted-2.4"
+DEPEND="dev-python/twisted[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
-DOCS="NAME.txt NEWS.txt"
+DOCS=( "NAME.txt" "NEWS.txt" )
+PATCHES=( "${FILESDIR}/epsilon_plugincache_portagesandbox.patch" )
 
-src_prepare() {
+python_prepare_all() {
 	# Rename to avoid file-collisions
 	mv bin/benchmark bin/epsilon-benchmark
 	sed -i \
@@ -42,27 +35,16 @@ src_prepare() {
 		setup.py || die "sed failed"
 	# otherwise we get sandbox violations as it wants to update
 	# the plugin cache
-	epatch "${FILESDIR}/epsilon_plugincache_portagesandbox.patch"
 
 	#These test are removed upstream
 	rm -f epsilon/test/test_sslverify.py epsilon/sslverify.py || die
 	#See bug 357157 comment 5 for Ian Delaney's explanation of this fix
 	sed -e 's:month) 2004 9:month) 2004 14:' \
 		-i epsilon/test/test_extime.py || die
-	#These are broken too
-	rm -f epsilon/test/test_release.py epsilon/release.py || die
-
-	python_copy_sources
-}
-
-src_compile() {
-	# Skip distutils_src_compile to avoid installation of $(python_get_sitedir)/build directory.
-	:
-}
-
-src_test() {
 	# Release tests need DivmodCombinator.
-	rm -f epsilon/test/test_release.py* epsilon/release.py
+	rm -f epsilon/test/test_release.py* epsilon/release.py || die
+}
 
-	distutils_src_test
+python_test() {
+	trial epsilon || die "tests failed with $EPYTHON"
 }

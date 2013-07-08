@@ -2,18 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/vertex/vertex-0.3.0.ebuild,v 1.7 2012/10/17 09:16:30 patrick Exp $
 
-EAPI="3"
-PYTHON_DEPEND="2"
-SUPPORT_PYTHON_ABIS="1"
-RESTRICT_PYTHON_ABIS="2.5 3.* *-jython"
-DISTUTILS_SRC_TEST="trial"
-DISTUTILS_DISABLE_TEST_DEPENDENCY="1"
+EAPI="5"
+PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-# setup.py uses epsilon.setuphelper.autosetup(), which tries to use
-# build-${PYTHON_ABI} directories as packages.
-DISTUTILS_USE_SEPARATE_SOURCE_DIRECTORIES="1"
-
-inherit distutils
+inherit distutils-r1
 
 MY_PN="Vertex"
 MY_P="${MY_PN}-${PV}"
@@ -27,17 +19,16 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND=">=dev-libs/openssl-0.9.7
-	>=dev-python/epsilon-0.5.0
-	>=dev-python/pyopenssl-0.6
-	>=dev-python/twisted-2.4"
+DEPEND="dev-libs/openssl
+	>=dev-python/epsilon-0.6.0-r1[${PYTHON_USEDEP}]
+	>=dev-python/pyopenssl-0.13-r1[${PYTHON_USEDEP}]
+	dev-python/twisted[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
-DOCS="NAME.txt README.txt"
+DOCS=( "NAME.txt" "README.txt" )
 
-src_compile() {
-	# Skip distutils_src_compile to avoid installation of $(python_get_sitedir)/build directory.
-	:
+python_test() {
+	trial vertex || die "tests failed with $EPYTHON"
 }

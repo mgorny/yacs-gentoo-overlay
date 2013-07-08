@@ -2,14 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/nevow/nevow-0.10.0.ebuild,v 1.13 2012/10/12 08:16:28 patrick Exp $
 
-EAPI="3"
-PYTHON_DEPEND="2"
-SUPPORT_PYTHON_ABIS="1"
-RESTRICT_PYTHON_ABIS="2.5 3.* *-jython"
-DISTUTILS_SRC_TEST="trial formless nevow"
-DISTUTILS_DISABLE_TEST_DEPENDENCY="1"
+EAPI="5"
+PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-inherit twisted
+inherit twisted-r1
 
 MY_PN="Nevow"
 MY_P="${MY_PN}-${PV}"
@@ -20,25 +16,24 @@ SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="alpha amd64 ia64 ppc ppc64 sparc x86 ~x86-linux"
+KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-linux"
 IUSE="doc"
 
-DEPEND=">=dev-python/twisted-2.5
-	>=dev-python/twisted-web-8.1.0
-	net-zope/zope-interface"
+DEPEND="dev-python/twisted[${PYTHON_USEDEP}]
+	dev-python/twisted-web[${PYTHON_USEDEP}]
+	net-zope/zope-interface[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
-PYTHON_MODNAME="formless nevow"
-TWISTED_PLUGINS="nevow.plugins"
+TWISTED_PLUGINS=( nevow.plugins )
 
-src_test() {
-	TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE="1" distutils_src_test
+python_test() {
+	trial formless nevow || die "tests failed with $EPYTHON"
 }
 
-src_install() {
-	distutils_src_install
+python_install_all() {
+	distutils-r1_python_install_all
 
 	doman doc/man/nevow-xmlgettext.1
 	if use doc; then
