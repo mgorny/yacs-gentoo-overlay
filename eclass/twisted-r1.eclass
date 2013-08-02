@@ -5,30 +5,55 @@
 # @ECLASS: twisted-r1.eclass
 # @MAINTAINER:
 # Gentoo Python Project <python@gentoo.org>
+# @AUTHOR:
+# Author: Jan Matejka <yac@gentoo.org>
 # @BLURB: Eclass for Twisted packages
 # @DESCRIPTION:
 # The twisted eclass defines phase functions for Twisted packages.
 
+case "${EAPI:-0}" in
+	0|1|2|3)
+		die "Unsupported EAPI=${EAPI:-0} (too old) for ${ECLASS}"
+		;;
+	4|5)
+		;;
+	*)
+		die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}"
+		;;
+esac
+
 # @ECLASS-VARIABLE: MY_PACKAGE
+# @REQUIRED
 # @DESCRIPTION:
 # Package name suffix.
+#
 # Required for dev-python/twisted* packages, unused otherwise.
 # Needs to be set before inherit.
 
 # @ECLASS-VARIABLE: MY_PV
+# @DEFAULT_UNSET
 # @DESCRIPTION:
-# Package version.
-# For dev-python/twisted* packages optional otherwise defaults to ebuilds
-# major.minor.
-# For other packages unused.
-# Needs to be set before inherit
+# Package version, defaults to ${PV}.
+#
+# Used only with dev-python/twisted* packages, defaults to ${PV}.
+# Needs to be set before inherit.
 
-inherit distutils-r1 versionator
+if [[ ! ${_TWISTED_R1} ]]; then
+
+inherit distutils-r1
+
+if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
+	inherit versionator
+fi
+
+fi # ! ${_TWISTED_R1}
 
 EXPORT_FUNCTIONS src_install pkg_postinst pkg_postrm
 
-if [[ "${CATEGORY}/${PN}" == "dev-python/twisted"* ]]; then
-	MY_PV="${MY_PV:-${PV}}"
+if [[ ! ${_TWISTED_R1} ]]; then
+
+if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
+	: ${MY_PV:=${PV}}
 	MY_P="Twisted${MY_PACKAGE}-${MY_PV}"
 
 	HOMEPAGE="http://www.twistedmatrix.com/"
@@ -40,126 +65,105 @@ if [[ "${CATEGORY}/${PN}" == "dev-python/twisted"* ]]; then
 	SLOT="0"
 	IUSE=""
 
-	S="${WORKDIR}/${MY_P}"
+	S=${WORKDIR}/${MY_P}
 
-	[[ ${TWISTED_PLUGINS} ]] || TWISTED_PLUGINS=( twisted.plugins )
+	[[ ${TWISTED_PLUGINS[@]} ]] || TWISTED_PLUGINS=( twisted.plugins )
 fi
 
 # @ECLASS-VARIABLE: TWISTED_PLUGINS
+# @DEFAULT_UNSET
 # @DESCRIPTION:
 # An array of Twisted plugins, whose cache is regenerated in pkg_postinst() and
 # pkg_postrm() phases.
+#
+# In dev-python/twisted* packages, defaults to twisted.plugins.
+# Otherwise unset.
 
 
 # @FUNCTION: twisted-r1_python_test
 # @DESCRIPTION:
-# python_test function for dev-python/twisted-* ebuilds
+# python_test() implementation for dev-python/twisted-* ebuilds
 twisted-r1_python_test() {
 	local sitedir="$(python_get_sitedir)"
 
 	# Copy modules of other Twisted packages from site-packages
-	# directory to temporary directory.
+	# directory to the temporary directory.
 	local libdir=${BUILD_DIR}/test/lib
-	mkdir -p ${libdir}
-	cp -r "${ROOT}${sitedir}/twisted" ${libdir} || \
-		die "Copying twisted modules failed with ${EPYTHON}"
-	rm -fr "${libdir}/${PN/-//}"
+	mkdir -p "${libdir}" || die
+	cp -r "${ROOT}${sitedir}"/twisted "${libdir}" || die
+	# Drop the installed module in case previous version conflicts with
+	# the new one somehow.
+	rm -fr "${libdir}/${PN/-//}" || die
 
-	distutils_install_for_testing || \
-		die "install for testing failed $EPYTHON"
+	distutils_install_for_testing || die
 
-	cd ${TEST_DIR}/lib || die "cd failed for $EPYTHON"
-	trial ${PN/-/.} || die "tests failed for $EPYTHON"
+	cd "${TEST_DIR}"/lib || die
+	trial ${PN/-/.} || die "Tests fail with ${EPYTHON}"
 }
 
 twisted-r1_src_install() {
-	[[ "${CATEGORY}/${PN}" == "dev-python/twisted"* ]] && \
-	[[ -d doc ]] && \
-		HTML_DOCS=( "doc/" )
+	if [[ ${CATEGORY}/${PN} == dev-python/twisted* && -d doc ]]; then
+		local HTML_DOCS=( "doc/" )
+	fi
 
 	distutils-r1_src_install
 
-	if [[ -d doc/man ]]; then
-		doman doc/man/*.[[:digit:]]
-	fi
-}
-
-_twisted-r1_foreach_plugin() {
-	debug-print-function ${FUNCNAME} "${@}"
-
-	local rc=0
-
-	for module in ${TWISTED_PLUGINS[@]}; do
-		${@} $module || rc=1
-	done
-
-	return $rc
-}
-
-_twisted-r1_delete_caches() {
-	local module=$1
-
-	[[ -z "${module}" ]] && \
-		{ eerror "empty module for $EPYTHON"; return 1; }
-
-	[[ -d "${ROOT}$(python_get_sitedir)/${module//.//}" ]] && \
-		find "${ROOT}$(python_get_sitedir)/${module//.//}" \
-			-name dropin.cache -delete
+	[[ -d doc/man ]] && doman doc/man/*.[[:digit:]]
 }
 
 _twisted-r1_create_caches() {
 	# http://twistedmatrix.com/documents/current/core/howto/plugin.html
-	local module=$1
-
-	[[ -z "${module}" ]] && \
-		{ eerror "empty module for $EPYTHON"; return 1; }
-
 	"${PYTHON}" -c \
 "import sys
 sys.path.insert(0, '${ROOT}$(python_get_sitedir)')
 
+fail = False
+
 try:
-	import twisted.plugin
-	import ${module}
-except ImportError:
+	from twisted.plugin import getPlugins, IPlugin
+except ImportError as e:
 	if '${EBUILD_PHASE}' == 'postinst':
 		raise
-	else:
-		# Twisted, zope.interface or given plugins might have been
-		# uninstalled.
-		sys.exit(0)
-
-list(twisted.plugin.getPlugins(twisted.plugin.IPlugin, ${module}))"
+else:
+	for module in sys.argv[1:]:
+		try:
+			# XXX: this gets parent module
+			# and we want submodule
+			m = __import__(module, globals())
+		except ImportError as e:
+			if '${EBUILD_PHASE}' == 'postinst':
+				raise
+		else:
+			list(getPlugins(IPlugin, m))
+" \
+		"${@}" || die "twisted plugin cache update failed"
 }
 
-_twisted-r1_delete_empty_dirs() {
-	# Delete empty parent directories.
-	local module=$1
-	local dir="${ROOT}$(python_get_sitedir)/${module//.//}"
-
-	[[ -z "${module}" ]] && \
-		{ eerror "empty module for $EPYTHON"; return 1; }
-
-	while [[ "${dir}" != "${EROOT%/}" ]]; do
-		rmdir "${dir}" 2> /dev/null || break
-		dir="${dir%/*}"
-	done
-}
-
-_twisted-r1_update_plugin_cache() {
+twisted-r1_update_plugin_cache() {
 	local rc=0
 
-	_twisted-r1_foreach_plugin _twisted-r1_delete_caches
-	_twisted-r1_foreach_plugin _twisted-r1_create_caches || rc=1
-	_twisted-r1_foreach_plugin _twisted-r1_delete_empty_dirs
+	local subdirs=( "${TWISTED_PLUGINS[@]//.//}" )
+	local paths=( "${subdirs[@]/#/${ROOT}$(python_get_sitedir)/}" )
+	local caches=( "${paths[@]/%//dropin.cache}" )
 
-	return $rc
+	# First, delete existing (possibly stray) caches.
+	rm -f "${caches[@]}" || die
+
+	# Now, let's see which ones we can regenerate.
+	_twisted-r1_create_caches "${TWISTED_PLUGINS[@]}"
+
+	# Finally, drop empty parent directories.
+	rmdir -p "${paths}" 2>/dev/null
 }
 
 twisted-r1_pkg_postinst() {
-	_distutils-r1_run_foreach_impl _twisted-r1_update_plugin_cache
+	_distutils-r1_run_foreach_impl twisted-r1_update_plugin_cache
 }
 
 twisted-r1_pkg_postrm() {
-	_distutils-r1_run_foreach_impl _twisted-r1_update_plugin_cache
+	_distutils-r1_run_foreach_impl twisted-r1_update_plugin_cache
 }
+
+_TWISTED_R1=1
+
+fi # ! ${_TWISTED_R1}
