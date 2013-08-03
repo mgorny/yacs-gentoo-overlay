@@ -10,7 +10,7 @@ inherit eutils twisted-r1
 
 DESCRIPTION="Axiom is an object database implemented on top of SQLite."
 HOMEPAGE="http://divmod.org/trac/wiki/DivmodAxiom http://pypi.python.org/pypi/Axiom"
-SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
+SRC_URI="mirror://pypi/${TWISTED_PN:0:1}/${TWISTED_PN}/${TWISTED_P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

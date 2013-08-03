@@ -65,19 +65,19 @@ _twisted_camelcase() {
 	done
 }
 
-MY_PN=$(_twisted_camelcase ${PN})
-MY_P=${MY_PN}-${PV}
+TWISTED_PN=$(_twisted_camelcase ${PN})
+TWISTED_P=${TWISTED_PN}-${PV}
 
 HOMEPAGE="http://www.twistedmatrix.com/"
-SRC_URI="http://twistedmatrix.com/Releases/${MY_PN}"
+SRC_URI="http://twistedmatrix.com/Releases/${TWISTED_PN}"
 SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
-SRC_URI="${SRC_URI}/${MY_P}.tar.bz2"
+SRC_URI="${SRC_URI}/${TWISTED_P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="0"
 IUSE=""
 
-S=${WORKDIR}/${MY_P}
+S=${WORKDIR}/${TWISTED_P}
 
 # @ECLASS-VARIABLE: TWISTED_PLUGINS
 # @DESCRIPTION:
