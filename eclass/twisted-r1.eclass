@@ -30,14 +30,6 @@ esac
 # Required for dev-python/twisted* packages, unused otherwise.
 # Needs to be set before inherit.
 
-# @ECLASS-VARIABLE: MY_PV
-# @DEFAULT_UNSET
-# @DESCRIPTION:
-# Package version, defaults to ${PV}.
-#
-# Used only with dev-python/twisted* packages, defaults to ${PV}.
-# Needs to be set before inherit.
-
 if [[ ! ${_TWISTED_R1} ]]; then
 
 inherit distutils-r1
@@ -53,12 +45,11 @@ EXPORT_FUNCTIONS src_install pkg_postinst pkg_postrm
 if [[ ! ${_TWISTED_R1} ]]; then
 
 if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
-	: ${MY_PV:=${PV}}
-	MY_P="Twisted${MY_PACKAGE}-${MY_PV}"
+	MY_P="Twisted${MY_PACKAGE}-${PV}"
 
 	HOMEPAGE="http://www.twistedmatrix.com/"
 	SRC_URI="http://twistedmatrix.com/Releases/${MY_PACKAGE}"
-	SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${MY_PV})"
+	SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
 	SRC_URI="${SRC_URI}/${MY_P}.tar.bz2"
 
 	LICENSE="MIT"
