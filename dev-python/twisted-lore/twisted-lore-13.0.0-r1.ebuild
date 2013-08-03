@@ -14,7 +14,7 @@ DESCRIPTION="Twisted documentation system"
 KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE=""
 
-DEPEND="=dev-python/twisted-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]
+DEPEND="=dev-python/twisted-core-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]
 	=dev-python/twisted-web-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 

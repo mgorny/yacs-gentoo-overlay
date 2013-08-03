@@ -22,7 +22,7 @@ IUSE=""
 DEPEND="dev-libs/openssl
 	>=dev-python/epsilon-0.6.0-r1[${PYTHON_USEDEP}]
 	>=dev-python/pyopenssl-0.13-r1[${PYTHON_USEDEP}]
-	dev-python/twisted[${PYTHON_USEDEP}]"
+	dev-python/twisted-core[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"

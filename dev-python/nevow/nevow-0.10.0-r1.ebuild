@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-linux"
 IUSE="doc"
 
-DEPEND="dev-python/twisted[${PYTHON_USEDEP}]
+DEPEND="dev-python/twisted-core[${PYTHON_USEDEP}]
 	dev-python/twisted-web[${PYTHON_USEDEP}]
 	net-zope/zope-interface[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"

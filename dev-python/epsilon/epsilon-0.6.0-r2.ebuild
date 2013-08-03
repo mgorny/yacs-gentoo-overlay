@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE=""
 
-DEPEND="dev-python/twisted[${PYTHON_USEDEP}]"
+DEPEND="dev-python/twisted-core[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"

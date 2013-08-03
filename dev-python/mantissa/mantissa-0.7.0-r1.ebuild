@@ -24,7 +24,7 @@ DEPEND=">=dev-python/axiom-0.6.0-r1[${PYTHON_USEDEP}]
 	virtual/python-imaging[${PYTHON_USEDEP}]
 	>=dev-python/nevow-0.10.0-r1[${PYTHON_USEDEP}]
 	>=dev-python/pytz-2012j[${PYTHON_USEDEP}]
-	dev-python/twisted[${PYTHON_USEDEP}]
+	dev-python/twisted-core[${PYTHON_USEDEP}]
 	dev-python/twisted-mail[${PYTHON_USEDEP}]
 	>=dev-python/vertex-0.3.0-r1[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
