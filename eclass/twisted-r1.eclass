@@ -33,38 +33,42 @@ EXPORT_FUNCTIONS src_install pkg_postinst pkg_postrm
 
 if [[ ! ${_TWISTED_R1} ]]; then
 
-# @FUNCTION: _twisted_camelcase
-# @USAGE: <package-name>
+# @FUNCTION: _twisted-r1_camelcase_pn
 # @DESCRIPTION:
-# Convert dash-separated package name to CamelCase. In pure bash.
+# Convert dash-separated ${PN} to CamelCase ${TWISTED_PN}. In pure bash.
 # Really.
-_twisted_camelcase() {
-	local pn=${1}
+_twisted-r1_camelcase_pn() {
 	local save_IFS=${IFS}
 	local IFS=-
 
 	# IFS=- splits words by -.
-	local w words=( ${pn} )
+	local w words=( ${PN} )
+
+	TWISTED_PN=
 
 	local IFS=${save_IFS}
+	local LC_COLLATE=C
+
 	for w in "${words[@]}"; do
 		if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
-			echo -n "${w^}"
+			TWISTED_PN+=${w^}
 		else
-			local fl=${w:0:1}
-			# obtain octal ASCII code for the first letter.
-			local ord=$(printf '%o' "'${fl}")
+			local fl=${w:0:1} oct
 
-			# check if it's [a-z]. ASCII codes are locale-safe.
-			if [[ ${ord} -ge 141 && ${ord} -le 172 ]]; then
-				# now substract 040 to make it upper-case.
-				# fun fact: in range 0141..0172, decimal '- 40' is fine.
-				local ord=$(( ${ord} - 40))
-				# and convert it back to the character.
-				fl=$(printf '\'${ord})
+			# Danger: magic starts here. Please close your eyes.
+			# Now, listen carefully. In base 36, characters a..z
+			# represent digits 10..35. We need to map them into
+			# ASCII codes for A..Z, that is 65..90. So we add
+			# (65-10)=55. After we've got decimal ASCII code, we need to
+			# convert it to octal using printf, to obtain "\ooo" code.
+			# If we printf that, we get the uppercase letter.
+
+			if [[ ${fl} == [a-z] ]]; then
+				printf -v oct '\%o' $(( 36#${fl} + 55 ))
+				printf -v fl ${oct}
 			fi
 
-			echo -n "${fl}${w:1}"
+			TWISTED_PN+="${fl}${w:1}"
 		fi
 	done
 }
@@ -74,7 +78,7 @@ _twisted_camelcase() {
 # The Twisted CamelCase converted form of package name.
 #
 # Example: TwistedCore
-TWISTED_PN=$(_twisted_camelcase ${PN})
+_twisted-r1_camelcase_pn
 
 # @ECLASS-VARIABLE: TWISTED_P
 # @DESCRIPTION:
