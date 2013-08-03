@@ -48,20 +48,24 @@ _twisted_camelcase() {
 
 	local IFS=${save_IFS}
 	for w in "${words[@]}"; do
-		local fl=${w:0:1}
-		# obtain octal ASCII code for the first letter.
-		local ord=$(printf '%o' "'${fl}")
+		if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
+			echo -n "${w^}"
+		else
+			local fl=${w:0:1}
+			# obtain octal ASCII code for the first letter.
+			local ord=$(printf '%o' "'${fl}")
 
-		# check if it's [a-z]. ASCII codes are locale-safe.
-		if [[ ${ord} -ge 141 && ${ord} -le 172 ]]; then
-			# now substract 040 to make it upper-case.
-			# fun fact: in range 0141..0172, decimal '- 40' is fine.
-			local ord=$(( ${ord} - 40))
-			# and convert it back to the character.
-			fl=$(printf '\'${ord})
+			# check if it's [a-z]. ASCII codes are locale-safe.
+			if [[ ${ord} -ge 141 && ${ord} -le 172 ]]; then
+				# now substract 040 to make it upper-case.
+				# fun fact: in range 0141..0172, decimal '- 40' is fine.
+				local ord=$(( ${ord} - 40))
+				# and convert it back to the character.
+				fl=$(printf '\'${ord})
+			fi
+
+			echo -n "${fl}${w:1}"
 		fi
-
-		echo -n "${fl}${w:1}"
 	done
 }
 
