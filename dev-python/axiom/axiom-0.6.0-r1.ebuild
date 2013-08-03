@@ -21,7 +21,7 @@ KEYWORDS="~amd64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE=""
 
 DEPEND=">=dev-python/epsilon-0.6.0-r2[${PYTHON_USEDEP}]
-	dev-python/twisted[${PYTHON_USEDEP}]
+	dev-python/twisted-core[${PYTHON_USEDEP}]
 	dev-python/twisted-conch[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 

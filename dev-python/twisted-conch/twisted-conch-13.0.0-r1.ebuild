@@ -15,7 +15,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE=""
 
 DEPEND="
-	=dev-python/twisted-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]
+	=dev-python/twisted-core-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]
 	dev-python/pyasn1[${PYTHON_USEDEP}]
 	dev-python/pycrypto[${PYTHON_USEDEP}]
 "
