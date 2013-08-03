@@ -42,15 +42,21 @@ _twisted_camelcase() {
 	local save_IFS=${IFS}
 	local IFS=-
 
+	# IFS=- splits words by -.
 	local w words=( ${pn} )
 
 	local IFS=${save_IFS}
 	for w in "${words[@]}"; do
 		local fl=${w:0:1}
+		# obtain octal ASCII code for the first letter.
+		local ord=$(printf '%o' "'${fl}")
 
-		if [[ ${fl} == [a-z] ]]; then
-			# Fun fact: in range 0141..0172, decimal '- 40' is fine.
-			local ord=$(( $(printf '%o' "'${fl}") - 40))
+		# check if it's [a-z]. ASCII codes are locale-safe.
+		if [[ ${ord} -ge 141 && ${ord} -le 172 ]]; then
+			# now substract 040 to make it upper-case.
+			# fun fact: in range 0141..0172, decimal '- 40' is fine.
+			local ord=$(( ${ord} - 40))
+			# and convert it back to the character.
 			fl=$(printf '\'${ord})
 		fi
 
