@@ -24,11 +24,7 @@ esac
 
 if [[ ! ${_TWISTED_R1} ]]; then
 
-inherit distutils-r1
-
-if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
-	inherit versionator
-fi
+inherit distutils-r1 versionator
 
 fi # ! ${_TWISTED_R1}
 
@@ -62,21 +58,19 @@ _twisted_camelcase() {
 	done
 }
 
-if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
-	MY_PN=$(_twisted_camelcase ${PN})
-	MY_P=${MY_PN}-${PV}
+MY_PN=$(_twisted_camelcase ${PN})
+MY_P=${MY_PN}-${PV}
 
-	HOMEPAGE="http://www.twistedmatrix.com/"
-	SRC_URI="http://twistedmatrix.com/Releases/${MY_PN}"
-	SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
-	SRC_URI="${SRC_URI}/${MY_P}.tar.bz2"
+HOMEPAGE="http://www.twistedmatrix.com/"
+SRC_URI="http://twistedmatrix.com/Releases/${MY_PN}"
+SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
+SRC_URI="${SRC_URI}/${MY_P}.tar.bz2"
 
-	LICENSE="MIT"
-	SLOT="0"
-	IUSE=""
+LICENSE="MIT"
+SLOT="0"
+IUSE=""
 
-	S=${WORKDIR}/${MY_P}
-fi
+S=${WORKDIR}/${MY_P}
 
 # @ECLASS-VARIABLE: TWISTED_PLUGINS
 # @DESCRIPTION:
