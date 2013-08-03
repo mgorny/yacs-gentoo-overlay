@@ -49,24 +49,19 @@ _twisted-r1_camelcase_pn() {
 	local IFS=${save_IFS}
 	local LC_COLLATE=C
 
+	local uc=( {A..Z} )
+
 	for w in "${words[@]}"; do
 		if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
 			TWISTED_PN+=${w^}
 		else
-			local fl=${w:0:1} oct
+			local fl=${w:0:1}
 
 			# Danger: magic starts here. Please close your eyes.
-			# Now, listen carefully. In base 36, characters a..z
-			# represent digits 10..35. We need to map them into
-			# ASCII codes for A..Z, that is 65..90. So we add
-			# (65-10)=55. After we've got decimal ASCII code, we need to
-			# convert it to octal using printf, to obtain "\ooo" code.
-			# If we printf that, we get the uppercase letter.
+			# In base 36, a..z represents digits 10..35. We substract 10
+			# and get array subscripts for uc.
 
-			if [[ ${fl} == [a-z] ]]; then
-				printf -v oct '\%o' $(( 36#${fl} + 55 ))
-				printf -v fl ${oct}
-			fi
+			[[ ${fl} == [a-z] ]] && fl=${uc[$(( 36#${fl} - 10 ))]}
 
 			TWISTED_PN+="${fl}${w:1}"
 		fi
