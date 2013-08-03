@@ -8,9 +8,6 @@ PYTHON_REQ_USE="sqlite"
 
 inherit eutils twisted-r1
 
-MY_PN="Axiom"
-MY_P="${MY_PN}-${PV}"
-
 DESCRIPTION="Axiom is an object database implemented on top of SQLite."
 HOMEPAGE="http://divmod.org/trac/wiki/DivmodAxiom http://pypi.python.org/pypi/Axiom"
 SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
@@ -24,8 +21,6 @@ DEPEND=">=dev-python/epsilon-0.6.0-r2[${PYTHON_USEDEP}]
 	dev-python/twisted-core[${PYTHON_USEDEP}]
 	dev-python/twisted-conch[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/${MY_P}"
 
 DOCS=( "NAME.txt" )
 PATCHES=(

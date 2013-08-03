@@ -7,9 +7,6 @@ PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
 inherit twisted-r1
 
-MY_PN="Nevow"
-MY_P="${MY_PN}-${PV}"
-
 DESCRIPTION="A web templating framework that provides LivePage, an automatic AJAX toolkit."
 HOMEPAGE="http://divmod.org/trac/wiki/DivmodNevow http://pypi.python.org/pypi/Nevow"
 SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
@@ -23,8 +20,6 @@ DEPEND="dev-python/twisted-core[${PYTHON_USEDEP}]
 	dev-python/twisted-web[${PYTHON_USEDEP}]
 	net-zope/zope-interface[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/${MY_P}"
 
 TWISTED_PLUGINS=( nevow.plugins )
 

@@ -7,9 +7,6 @@ PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
 inherit twisted-r1
 
-MY_PN="Mantissa"
-MY_P="${MY_PN}-${PV}"
-
 DESCRIPTION="An extensible, multi-protocol, multi-user, interactive application server"
 HOMEPAGE="http://divmod.org/trac/wiki/DivmodMantissa http://pypi.python.org/pypi/Mantissa"
 SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
@@ -28,8 +25,6 @@ DEPEND=">=dev-python/axiom-0.6.0-r1[${PYTHON_USEDEP}]
 	dev-python/twisted-mail[${PYTHON_USEDEP}]
 	>=dev-python/vertex-0.3.0-r1[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/${MY_P}"
 
 DOCS=( "NAME.txt" "NEWS.txt" )
 TWISTED_PLUGINS=( axiom.plugins nevow.plugins xmantissa.plugins )
