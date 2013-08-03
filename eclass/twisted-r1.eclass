@@ -76,18 +76,13 @@ if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
 	IUSE=""
 
 	S=${WORKDIR}/${MY_P}
-
-	[[ ${TWISTED_PLUGINS[@]} ]] || TWISTED_PLUGINS=( twisted.plugins )
 fi
 
 # @ECLASS-VARIABLE: TWISTED_PLUGINS
-# @DEFAULT_UNSET
 # @DESCRIPTION:
-# An array of Twisted plugins, whose cache is regenerated in pkg_postinst() and
-# pkg_postrm() phases.
-#
-# In dev-python/twisted* packages, defaults to twisted.plugins.
-# Otherwise unset.
+# An array of Twisted plugins, whose cache is regenerated
+# in pkg_postinst() and pkg_postrm() phases.
+[[ ${TWISTED_PLUGINS[@]} ]] || TWISTED_PLUGINS=( twisted.plugins )
 
 
 # @FUNCTION: twisted-r1_python_test
