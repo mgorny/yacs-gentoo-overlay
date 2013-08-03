@@ -22,14 +22,6 @@ case "${EAPI:-0}" in
 		;;
 esac
 
-# @ECLASS-VARIABLE: MY_PACKAGE
-# @REQUIRED
-# @DESCRIPTION:
-# Package name suffix.
-#
-# Required for dev-python/twisted* packages, unused otherwise.
-# Needs to be set before inherit.
-
 if [[ ! ${_TWISTED_R1} ]]; then
 
 inherit distutils-r1
@@ -44,11 +36,38 @@ EXPORT_FUNCTIONS src_install pkg_postinst pkg_postrm
 
 if [[ ! ${_TWISTED_R1} ]]; then
 
+# @FUNCTION: _twisted_camelcase
+# @USAGE: <package-name>
+# @DESCRIPTION:
+# Convert dash-separated package name to CamelCase. In pure bash.
+# Really.
+_twisted_camelcase() {
+	local pn=${1}
+	local save_IFS=${IFS}
+	local IFS=-
+
+	local w words=( ${pn} )
+
+	local IFS=${save_IFS}
+	for w in "${words[@]}"; do
+		local fl=${w:0:1}
+
+		if [[ ${fl} == [a-z] ]]; then
+			# Fun fact: in range 0141..0172, decimal '- 40' is fine.
+			local ord=$(( $(printf '%o' "'${fl}") - 40))
+			fl=$(printf '\'${ord})
+		fi
+
+		echo -n "${fl}${w:1}"
+	done
+}
+
 if [[ ${CATEGORY}/${PN} == dev-python/twisted* ]]; then
-	MY_P="Twisted${MY_PACKAGE}-${PV}"
+	MY_PN=$(_twisted_camelcase ${PN})
+	MY_P=${MY_PN}-${PV}
 
 	HOMEPAGE="http://www.twistedmatrix.com/"
-	SRC_URI="http://twistedmatrix.com/Releases/${MY_PACKAGE}"
+	SRC_URI="http://twistedmatrix.com/Releases/${MY_PN}"
 	SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
 	SRC_URI="${SRC_URI}/${MY_P}.tar.bz2"
 
