@@ -5,8 +5,6 @@
 EAPI="5"
 PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-MY_PACKAGE="Core"
-
 inherit eutils twisted-r1
 
 DESCRIPTION="An asynchronous networking framework written in Python"

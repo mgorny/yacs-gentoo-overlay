@@ -5,8 +5,6 @@
 EAPI="5"
 PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-MY_PACKAGE="Runner"
-
 inherit twisted-r1 versionator
 
 DESCRIPTION="Twisted Runner is a process management library and inetd replacement."
