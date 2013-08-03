@@ -65,7 +65,18 @@ _twisted_camelcase() {
 	done
 }
 
+# @ECLASS-VARIABLE: TWISTED_PN
+# @DESCRIPTION:
+# The Twisted CamelCase converted form of package name.
+#
+# Example: TwistedCore
 TWISTED_PN=$(_twisted_camelcase ${PN})
+
+# @ECLASS-VARIABLE: TWISTED_P
+# @DESCRIPTION:
+# The Twisted CamelCase package name & version.
+#
+# Example: TwistedCore-1.2.3
 TWISTED_P=${TWISTED_PN}-${PV}
 
 HOMEPAGE="http://www.twistedmatrix.com/"
@@ -83,12 +94,15 @@ S=${WORKDIR}/${TWISTED_P}
 # @DESCRIPTION:
 # An array of Twisted plugins, whose cache is regenerated
 # in pkg_postinst() and pkg_postrm() phases.
+#
+# If no plugins are installed, set to empty array.
 [[ ${TWISTED_PLUGINS[@]} ]] || TWISTED_PLUGINS=( twisted.plugins )
 
 
 # @FUNCTION: twisted-r1_python_test
 # @DESCRIPTION:
-# python_test() implementation for dev-python/twisted-* ebuilds
+# The common python_test() implementation that suffices Twisted
+# packages.
 twisted-r1_python_test() {
 	local sitedir=$(python_get_sitedir)
 
@@ -107,12 +121,21 @@ twisted-r1_python_test() {
 	trial ${PN/-/.} || die "Tests fail with ${EPYTHON}"
 }
 
-# Default one is a no-op anyway, so let's override it.
+# @FUNCTION: python_test
+# @DESCRIPTION:
+# Default python_test() for Twisted packages. If you need to override
+# it, you can access the original implementation
+# via twisted-r1_python_test.
 python_test() {
 	twisted-r1_python_test
 }
 
+# @FUNCTION: twisted-r1_src_install
+# @DESCRIPTION:
+# Default src_install() for Twisted packages. Automatically handles HTML
+# docs and manpages in Twisted packages
 twisted-r1_src_install() {
+	# TODO: doesn't this accidentially involve installing manpages? ;f
 	if [[ ${CATEGORY}/${PN} == dev-python/twisted* && -d doc ]]; then
 		local HTML_DOCS=( doc/. )
 	fi
@@ -122,6 +145,11 @@ twisted-r1_src_install() {
 	[[ -d doc/man ]] && doman doc/man/*.[[:digit:]]
 }
 
+# @FUNCTION: _twisted-r1_create_caches
+# @USAGE: <packages>...
+# @DESCRIPTION:
+# Create dropin.cache for plugins in specified packages. The packages
+# are to be listed in standard dotted Python syntax.
 _twisted-r1_create_caches() {
 	# http://twistedmatrix.com/documents/current/core/howto/plugin.html
 	"${PYTHON}" -c \
@@ -148,6 +176,10 @@ else:
 		"${@}" || die "twisted plugin cache update failed"
 }
 
+# @FUNCTION: twisted-r1_update_plugin_cache
+# @DESCRIPTION:
+# Update and clean up plugin caches for packages listed
+# in TWISTED_PLUGINS.
 twisted-r1_update_plugin_cache() {
 	local subdirs=( "${TWISTED_PLUGINS[@]//.//}" )
 	local paths=( "${subdirs[@]/#/${ROOT}$(python_get_sitedir)/}" )
@@ -163,10 +195,16 @@ twisted-r1_update_plugin_cache() {
 	rmdir -p "${paths[@]}" 2>/dev/null
 }
 
+# @FUNCTION: twisted-r1_pkg_postinst
+# @DESCRIPTION:
+# Post-installation hook for twisted-r1. Updates plugin caches.
 twisted-r1_pkg_postinst() {
 	_distutils-r1_run_foreach_impl twisted-r1_update_plugin_cache
 }
 
+# @FUNCTION: twisted-r1_pkg_postrm
+# @DESCRIPTION:
+# Post-removal hook for twisted-r1. Updates plugin caches.
 twisted-r1_pkg_postrm() {
 	_distutils-r1_run_foreach_impl twisted-r1_update_plugin_cache
 }
