@@ -143,7 +143,7 @@ else:
 			if '${EBUILD_PHASE}' == 'postinst':
 				raise
 		else:
-			list(getPlugins(IPlugin, sys.modules[m]))
+			list(getPlugins(IPlugin, sys.modules[module]))
 " \
 		"${@}" || die "twisted plugin cache update failed"
 }
