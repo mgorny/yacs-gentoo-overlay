@@ -30,7 +30,7 @@ PATCHES=(
 
 	# Skip a test if twisted conch is not available
 	# (see Twisted ticket #5703)
-	"${FILESDIR}/twisted-12.1.0-remove-tests-conch-dependency.patch"
+	"${FILESDIR}/${PN}-12.1.0-remove-tests-conch-dependency.patch"
 
 	# Respect TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE variable.
 	"${FILESDIR}/${PN}-9.0.0-respect_TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE.patch"
