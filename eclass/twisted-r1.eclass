@@ -103,7 +103,7 @@ twisted-r1_python_test() {
 
 twisted-r1_src_install() {
 	if [[ ${CATEGORY}/${PN} == dev-python/twisted* && -d doc ]]; then
-		local HTML_DOCS=( "doc/" )
+		local HTML_DOCS=( doc/. )
 	fi
 
 	distutils-r1_src_install
@@ -127,21 +127,17 @@ except ImportError as e:
 else:
 	for module in sys.argv[1:]:
 		try:
-			# XXX: this gets parent module
-			# and we want submodule
-			m = __import__(module, globals())
+			__import__(module, globals())
 		except ImportError as e:
 			if '${EBUILD_PHASE}' == 'postinst':
 				raise
 		else:
-			list(getPlugins(IPlugin, m))
+			list(getPlugins(IPlugin, sys.modules[m]))
 " \
 		"${@}" || die "twisted plugin cache update failed"
 }
 
 twisted-r1_update_plugin_cache() {
-	local rc=0
-
 	local subdirs=( "${TWISTED_PLUGINS[@]//.//}" )
 	local paths=( "${subdirs[@]/#/${ROOT}$(python_get_sitedir)/}" )
 	local caches=( "${paths[@]/%//dropin.cache}" )
@@ -153,7 +149,7 @@ twisted-r1_update_plugin_cache() {
 	_twisted-r1_create_caches "${TWISTED_PLUGINS[@]}"
 
 	# Finally, drop empty parent directories.
-	rmdir -p "${paths}" 2>/dev/null
+	rmdir -p "${paths[@]}" 2>/dev/null
 }
 
 twisted-r1_pkg_postinst() {
