@@ -24,18 +24,17 @@ RDEPEND="${DEPEND}"
 # (see http://twistedmatrix.com/trac/ticket/5701 )
 PYTHON_CFLAGS=("2.* + -fno-strict-aliasing")
 
-DOCS=( CREDITS NEWS README )
-PATCHES=( )
+PATCHES=(
+	# Give a load-sensitive test a better chance of succeeding.
+	"${FILESDIR}/${PN}-2.1.0-echo-less.patch"
 
-# Give a load-sensitive test a better chance of succeeding.
-PATCHES+=( "${FILESDIR}/${PN}-2.1.0-echo-less.patch" )
+	# Skip a test if twisted conch is not available
+	# (see Twisted ticket #5703)
+	"${FILESDIR}/twisted-12.1.0-remove-tests-conch-dependency.patch"
 
-# Skip a test if twisted conch is not available
-# (see Twisted ticket #5703)
-PATCHES+=( "${FILESDIR}/twisted-12.1.0-remove-tests-conch-dependency.patch" )
-
-# Respect TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE variable.
-PATCHES+=( "${FILESDIR}/${PN}-9.0.0-respect_TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE.patch" )
+	# Respect TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE variable.
+	"${FILESDIR}/${PN}-9.0.0-respect_TWISTED_DISABLE_WRITING_OF_PLUGIN_CACHE.patch"
+)
 
 python_prepare_all() {
 	distutils-r1_python_prepare_all
@@ -85,7 +84,7 @@ python_install_all() {
 
 	# Delete dropin.cache to avoid collisions.
 	# dropin.cache is regenerated in pkg_postinst().
-	rm -f "${ED}$(python_get_sitedir)/twisted/plugins/dropin.cache"
+	rm -f "${D}$(python_get_sitedir)/twisted/plugins/dropin.cache"
 
 	# Don't install index.xhtml page.
 	doman doc/man/*.?
