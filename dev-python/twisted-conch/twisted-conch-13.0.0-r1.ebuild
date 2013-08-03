@@ -19,8 +19,6 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
-PYTHON_MODNAME="twisted/conch twisted/plugins"
-
 python_prepare_all() {
 	distutils-r1_python_prepare_all
 
@@ -29,8 +27,4 @@ python_prepare_all() {
 		sed -e "s/test_checkKeyAsRoot/_&/" -i twisted/conch/test/test_checkers.py
 		sed -e "s/test_getPrivateKeysAsRoot/_&/" -i twisted/conch/test/test_openssh_compat.py
 	fi
-}
-
-python_test() {
-	twisted-r1_python_test
 }

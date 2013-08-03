@@ -16,8 +16,6 @@ DEPEND="=dev-python/twisted-core-$(get_version_component_range 1-2)*[${PYTHON_US
 	soap? ( dev-python/soappy[${PYTHON_USEDEP}] )"
 RDEPEND="${DEPEND}"
 
-PYTHON_MODNAME="twisted/plugins twisted/web"
-
 python_prepare_all() {
 	distutils-r1_python_prepare_all
 
@@ -26,8 +24,4 @@ python_prepare_all() {
 		sed -e "s/test_forbiddenResource/_&/" -i twisted/web/test/test_static.py
 		sed -e "s/testDownloadPageError3/_&/" -i twisted/web/test/test_webclient.py
 	fi
-}
-
-python_test() {
-	twisted-r1_python_test
 }

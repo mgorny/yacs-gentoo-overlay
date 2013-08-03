@@ -100,6 +100,11 @@ twisted-r1_python_test() {
 	trial ${PN/-/.} || die "Tests fail with ${EPYTHON}"
 }
 
+# Default one is no-op anyway.
+python_test() {
+	twisted-r1_python_test
+}
+
 twisted-r1_src_install() {
 	if [[ ${CATEGORY}/${PN} == dev-python/twisted* && -d doc ]]; then
 		local HTML_DOCS=( doc/. )

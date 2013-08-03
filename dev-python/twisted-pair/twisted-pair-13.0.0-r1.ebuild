@@ -15,9 +15,3 @@ IUSE=""
 DEPEND="=dev-python/twisted-core-$(get_version_component_range 1-2)*[${PYTHON_USEDEP}]
 	dev-python/eunuchs[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
-
-PYTHON_MODNAME="twisted/pair"
-
-python_test() {
-	twisted-r1_python_test
-}
