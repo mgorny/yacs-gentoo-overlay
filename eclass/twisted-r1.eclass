@@ -6,6 +6,7 @@
 # @MAINTAINER:
 # Gentoo Python Project <python@gentoo.org>
 # @AUTHOR:
+# Author: Michał Górny <mgorny@gentoo.org>
 # Author: Jan Matejka <yac@gentoo.org>
 # @BLURB: Eclass for Twisted packages
 # @DESCRIPTION:
@@ -89,7 +90,7 @@ S=${WORKDIR}/${MY_P}
 # @DESCRIPTION:
 # python_test() implementation for dev-python/twisted-* ebuilds
 twisted-r1_python_test() {
-	local sitedir="$(python_get_sitedir)"
+	local sitedir=$(python_get_sitedir)
 
 	# Copy modules of other Twisted packages from site-packages
 	# directory to the temporary directory.
@@ -106,7 +107,7 @@ twisted-r1_python_test() {
 	trial ${PN/-/.} || die "Tests fail with ${EPYTHON}"
 }
 
-# Default one is no-op anyway.
+# Default one is a no-op anyway, so let's override it.
 python_test() {
 	twisted-r1_python_test
 }
