@@ -61,7 +61,7 @@ _twisted-r1_camelcase_pn() {
 			# In base 36, a..z represents digits 10..35. We substract 10
 			# and get array subscripts for uc.
 
-			[[ ${fl} == [a-z] ]] && fl=${uc[$(( 36#${fl} - 10 ))]}
+			[[ ${fl} == [a-z] ]] && fl=${uc[36#${fl} - 10]}
 
 			TWISTED_PN+="${fl}${w:1}"
 		fi
