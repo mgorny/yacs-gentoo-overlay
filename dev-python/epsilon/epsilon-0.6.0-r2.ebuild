@@ -5,7 +5,7 @@
 EAPI="5"
 PYTHON_COMPAT=( python{2_6,2_7} pypy{1_9,2_0} )
 
-inherit eutils twisted-r1
+inherit distutils-r1 eutils
 
 MY_PN="Epsilon"
 MY_P="${MY_PN}-${PV}"
