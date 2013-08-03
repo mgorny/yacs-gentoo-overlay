@@ -38,33 +38,33 @@ if [[ ! ${_TWISTED_R1} ]]; then
 # Convert dash-separated ${PN} to CamelCase ${TWISTED_PN}. In pure bash.
 # Really.
 _twisted-r1_camelcase_pn() {
-	local save_IFS=${IFS}
 	local IFS=-
 
 	# IFS=- splits words by -.
-	local w words=( ${PN} )
+	local words=( ${PN} )
+
+	# we can't keep '-' as it collides with [a-z] check
+	# and '' is used by bash-4 words[*], so let's just set globally
+	IFS=
+
+	if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
+		TWISTED_PN=${words[*]^}
+		return
+	fi
+
+	local w LC_COLLATE=C uc='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 	TWISTED_PN=
-
-	local IFS=${save_IFS}
-	local LC_COLLATE=C
-
-	local uc='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
 	for w in "${words[@]}"; do
-		if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
-			TWISTED_PN+=${w^}
-		else
-			local fl=${w:0:1}
+		local fl=${w:0:1}
 
-			# Danger: magic starts here. Please close your eyes.
-			# In base 36, a..z represents digits 10..35. We substract 10
-			# and get array subscripts for uc.
+		# Danger: magic starts here. Please close your eyes.
+		# In base 36, a..z represents digits 10..35. We substract 10
+		# and get array subscripts for uc.
 
-			[[ ${fl} == [a-z] ]] && fl=${uc:36#${fl} - 10:1}
+		[[ ${fl} == [a-z] ]] && fl=${uc:36#${fl} - 10:1}
 
-			TWISTED_PN+="${fl}${w:1}"
-		fi
+		TWISTED_PN+=${fl}${w:1}
 	done
 }
 
