@@ -36,8 +36,8 @@ if [[ ! ${_TWISTED_R1} ]]; then
 # @FUNCTION: _twisted-r1_camelcase
 # @USAGE: <pn>
 # @DESCRIPTION:
-# Convert dash-separated ${PN} to CamelCase ${TWISTED_PN}. In pure bash.
-# Really.
+# Convert dash-separated <pn> to CamelCase name suitable for Twisted.
+# In pure bash, therefore safe for global scope execution.
 _twisted-r1_camelcase() {
 	local IFS=-
 
@@ -73,17 +73,19 @@ _twisted-r1_camelcase() {
 
 # @ECLASS-VARIABLE: TWISTED_PN
 # @DESCRIPTION:
-# The Twisted CamelCase converted form of package name.
+# The real package name. Default to camel-case conversion of ${PN}.
 #
 # Example: TwistedCore
-TWISTED_PN=$(_twisted-r1_camelcase ${PN})
+: ${TWISTED_PN:=$(_twisted-r1_camelcase ${PN})}
 
 # @ECLASS-VARIABLE: TWISTED_P
 # @DESCRIPTION:
-# The Twisted CamelCase package name & version.
+# The real package name with version appended.
+#
+# It is used to build default SRC_URI and S values.
 #
 # Example: TwistedCore-1.2.3
-TWISTED_P=${TWISTED_PN}-${PV}
+: ${TWISTED_P:=${TWISTED_PN}-${PV}}
 
 HOMEPAGE="http://www.twistedmatrix.com/"
 SRC_URI="http://twistedmatrix.com/Releases/${TWISTED_PN}"
@@ -106,7 +108,7 @@ declare -p TWISTED_PLUGINS &>/dev/null || TWISTED_PLUGINS=( twisted.plugins )
 
 # @FUNCTION: twisted-r1_python_test
 # @DESCRIPTION:
-# The common python_test() implementation that suffices Twisted
+# The common python_test() implementation that suffices for Twisted
 # packages.
 twisted-r1_python_test() {
 	local sitedir=$(python_get_sitedir)
