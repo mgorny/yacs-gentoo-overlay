@@ -82,15 +82,25 @@ _twisted-r1_camelcase() {
 # @DESCRIPTION:
 # The real package name with version appended.
 #
-# It is used to build default SRC_URI and S values.
+# It is used to build the default SRC_URI and S values.
 #
 # Example: TwistedCore-1.2.3
 : ${TWISTED_P:=${TWISTED_PN}-${PV}}
 
+# @ECLASS-VARIABLE: TWISTED_RELEASE
+# @DESCRIPTION:
+# The 'release' of Twisted. Defaults to the major & minor version
+# number from ${PV}.
+#
+# It is used to build the default SRC_URI. It may be also used
+# in dependencies against other Twisted packages.
+#
+# Example: 1.2
+: ${TWISTED_RELEASE:=$(get_version_component_range 1-2 ${PV})
+
 HOMEPAGE="http://www.twistedmatrix.com/"
 SRC_URI="http://twistedmatrix.com/Releases/${TWISTED_PN}"
-SRC_URI="${SRC_URI}/$(get_version_component_range 1-2 ${PV})"
-SRC_URI="${SRC_URI}/${TWISTED_P}.tar.bz2"
+SRC_URI="${SRC_URI}/${TWISTED_RELEASE}/${TWISTED_P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="0"
