@@ -96,7 +96,7 @@ _twisted-r1_camelcase() {
 # in dependencies against other Twisted packages.
 #
 # Example: 1.2
-: ${TWISTED_RELEASE:=$(get_version_component_range 1-2 ${PV})
+: ${TWISTED_RELEASE:=$(get_version_component_range 1-2 ${PV})}
 
 HOMEPAGE="http://www.twistedmatrix.com/"
 SRC_URI="http://twistedmatrix.com/Releases/${TWISTED_PN}"
@@ -156,16 +156,13 @@ python_test() {
 # @FUNCTION: twisted-r1_src_install
 # @DESCRIPTION:
 # Default src_install() for Twisted packages. Automatically handles HTML
-# docs and manpages in Twisted packages
+# docs (unless HTML_DOCS is set explicitly) and manpages in Twisted
+# packages.
 twisted-r1_src_install() {
-	# TODO: doesn't this accidentially involve installing manpages? ;f
-	if [[ ${CATEGORY}/${PN} == dev-python/twisted* && -d doc ]]; then
-		local HTML_DOCS=( doc/. )
-	fi
+	[[ -d doc ]] && local HTML_DOCS=( "${HTML_DOCS[@]:-doc/.}" )
+	[[ -d doc/man ]] && doman doc/man/*.[[:digit:]]
 
 	distutils-r1_src_install
-
-	[[ -d doc/man ]] && doman doc/man/*.[[:digit:]]
 }
 
 # @FUNCTION: _twisted-r1_create_caches
