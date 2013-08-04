@@ -33,28 +33,29 @@ EXPORT_FUNCTIONS src_install pkg_postinst pkg_postrm
 
 if [[ ! ${_TWISTED_R1} ]]; then
 
-# @FUNCTION: _twisted-r1_camelcase_pn
+# @FUNCTION: _twisted-r1_camelcase
+# @USAGE: <pn>
 # @DESCRIPTION:
 # Convert dash-separated ${PN} to CamelCase ${TWISTED_PN}. In pure bash.
 # Really.
-_twisted-r1_camelcase_pn() {
+_twisted-r1_camelcase() {
 	local IFS=-
 
 	# IFS=- splits words by -.
-	local words=( ${PN} )
+	local words=( ${1} )
 
 	# we can't keep '-' as it collides with [a-z] check
 	# and '' is used by bash-4 words[*], so let's just set globally
 	IFS=
 
 	if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
-		TWISTED_PN=${words[*]^}
+		echo "${words[*]^}"
 		return
 	fi
 
 	local w LC_COLLATE=C uc='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-	TWISTED_PN=
+	local out
 	for w in "${words[@]}"; do
 		local fl=${w:0:1}
 
@@ -64,8 +65,10 @@ _twisted-r1_camelcase_pn() {
 
 		[[ ${fl} == [a-z] ]] && fl=${uc:36#${fl} - 10:1}
 
-		TWISTED_PN+=${fl}${w:1}
+		out+=${fl}${w:1}
 	done
+
+	echo "${out}"
 }
 
 # @ECLASS-VARIABLE: TWISTED_PN
@@ -73,7 +76,7 @@ _twisted-r1_camelcase_pn() {
 # The Twisted CamelCase converted form of package name.
 #
 # Example: TwistedCore
-_twisted-r1_camelcase_pn
+TWISTED_PN=$(_twisted-r1_camelcase ${PN})
 
 # @ECLASS-VARIABLE: TWISTED_P
 # @DESCRIPTION:
@@ -99,8 +102,7 @@ S=${WORKDIR}/${TWISTED_P}
 # in pkg_postinst() and pkg_postrm() phases.
 #
 # If no plugins are installed, set to empty array.
-[[ ${TWISTED_PLUGINS[@]} ]] || TWISTED_PLUGINS=( twisted.plugins )
-
+declare -p TWISTED_PLUGINS &>/dev/null || TWISTED_PLUGINS=( twisted.plugins )
 
 # @FUNCTION: twisted-r1_python_test
 # @DESCRIPTION:
@@ -119,6 +121,12 @@ twisted-r1_python_test() {
 	rm -fr "${libdir}/${PN/-//}" || die
 
 	distutils_install_for_testing || die
+
+	if [[ ${TEST_DIR} != ${BUILD_DIR}/test ]]; then
+		eqawarn "twisted-r1 integrity check failed."
+		eqawarn "TEST_DIR: ${TEST_DIR}"
+		eqawarn "expected: ${BUILD_DIR}/test"
+	fi
 
 	cd "${TEST_DIR}"/lib || die
 	trial ${PN/-/.} || die "Tests fail with ${EPYTHON}"
@@ -184,6 +192,8 @@ else:
 # Update and clean up plugin caches for packages listed
 # in TWISTED_PLUGINS.
 twisted-r1_update_plugin_cache() {
+	[[ ${TWISTED_PLUGINS[@]} ]] || return
+
 	local subdirs=( "${TWISTED_PLUGINS[@]//.//}" )
 	local paths=( "${subdirs[@]/#/${ROOT}$(python_get_sitedir)/}" )
 	local caches=( "${paths[@]/%//dropin.cache}" )
